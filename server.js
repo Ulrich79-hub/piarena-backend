@@ -8,37 +8,36 @@ app.use(cors());
 
 const PI_API_KEY = process.env.PI_API_KEY;
 
-app.get('/', (req, res) => {
+app.get('/', function(req, res) {
   res.json({ status: 'PiArena Backend OK' });
 });
 
-app.post('/approve', async (req, res) => {
-  const { paymentId } = req.body;
-  try {
-    await axios.post(
-      https://api.minepi.com/v2/payments/${paymentId}/approve,
-      {},
-      { headers: { Authorization: Key ${PI_API_KEY} } }
-    );
+app.post('/approve', function(req, res) {
+  var paymentId = req.body.paymentId;
+  var url = 'https://api.minepi.com/v2/payments/' + paymentId + '/approve';
+  axios.post(url, {}, {
+    headers: { Authorization: 'Key ' + PI_API_KEY }
+  }).then(function() {
     res.json({ approved: true });
-  } catch(e) {
+  }).catch(function(e) {
     res.status(500).json({ error: e.message });
-  }
+  });
 });
 
-app.post('/complete', async (req, res) => {
-  const { paymentId, txid } = req.body;
-  try {
-    await axios.post(
-      https://api.minepi.com/v2/payments/${paymentId}/complete,
-      { txid },
-      { headers: { Authorization: Key ${PI_API_KEY} } }
-    );
+app.post('/complete', function(req, res) {
+  var paymentId = req.body.paymentId;
+  var txid = req.body.txid;
+  var url = 'https://api.minepi.com/v2/payments/' + paymentId + '/complete';
+  axios.post(url, { txid: txid }, {
+    headers: { Authorization: 'Key ' + PI_API_KEY }
+  }).then(function() {
     res.json({ completed: true });
-  } catch(e) {
+  }).catch(function(e) {
     res.status(500).json({ error: e.message });
-  }
+  });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(Server running on port ${PORT}));
+var PORT = process.env.PORT || 3000;
+app.listen(PORT, function() {
+  console.log('PiArena Backend running on port ' + PORT);
+});
